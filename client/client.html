@@ -1,13 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <title>Our simple HTTP server</title>
   <link rel="stylesheet" type="text/css" href="/style.css">
-  
+
   <script>
+    const handleResponse = async (response) => {
+
+      
+      // response.text().then((resText) => {
+
+      //grab content section from page
+      const content = document.getElementById('content');
+      
+
+      //change content based on status code
+      switch (response.status) {
+        case 200: //Success
+          content.innerHTML = '<b>Success</b>';
+          break;
+        case 400:
+          content.innerHTML = '<b>Bad Request</b>';
+          break;
+        case 401:
+          content.innerHTML = '<b>Unauthorized</b>';
+          break;
+        case 403:
+          content.innerHTML = '<b>Forbidden</b>';
+          break;
+        case 500:
+          content.innerHTML = '<b>Internal Server Error</b>';
+          break;
+        case 501: //Success
+          content.innerHTML = '<b>Not Implemented</b>';
+          break;
+        case 404: //Not found: 
+          content.innerHTML = '<b>Not Found</b>';
+          break;
+        default:
+          content.innerHTML = '<b>Not Implemented</b>'
+
+      }
+      
+      const contentType = response.headers.get('Content-Type');
+
+      const resText = await response.text();
+      console.log(resText)
+
+      if (contentType === 'application/json') {
+        
+        const obj = JSON.parse(resText);
+        content.innerHTML += `<p>${obj.message}</p>`;
+
+      } else if (contentType === 'text/xml') {
+        const xmlDoc = new window.DOMParser().parseFromString(resText, 'text/xml');
+        content.innerHTML += `<p>${xmlDoc.querySelector('message').textContent}</p>`
+
+      }
+
+    };
+
+    const sendFetch = async (url, type) => {
+      //call fetch
+      let response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Accept': type,
+        }
+
+      });
+      handleResponse(response);
+
+      //promise method
+      /*
+      const fetchPromise = fetch(url, {
+        method: 'GET',
+        headers: {
+          'Accept': type,
+        }
+      });
+      fetchPromise.then(response => {
+        handleRespone(response);
+
+      });
+      */
+    };
+
+    const init = () => {
+      const sendButton = document.querySelector("#send");
+      const pageSelector = document.querySelector("#page");
+      const typeSelector = document.querySelector("#type");
+
+      const sent = () => sendFetch(pageSelector.value, typeSelector.value);
+
+      sendButton.addEventListener('click', sent);
+
+    };
+
+    window.onload = init;
 
   </script>
 </head>
+
 <body>
   <section id="top">
     <h3>Status Code Tests</h3>
@@ -29,4 +124,5 @@
   <section id="content">
   </section>
 </body>
+
 </html>
