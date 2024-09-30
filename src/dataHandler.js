@@ -151,7 +151,7 @@ const internal = (request, response) => {
     responseXML = `${responseXML} </response>`;
 
     // return response passing out string and content type
-    return respond(request, response, 200, responseXML, 'text/xml');
+    return respond(request, response, 500, responseXML, 'text/xml');
   }
 
   const responseString = JSON.stringify(content);
