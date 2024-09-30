@@ -155,7 +155,7 @@ const internal = (request, response) => {
   }
 
   const responseString = JSON.stringify(content);
-  return respond(request, response, 403, responseString, 'application/json');
+  return respond(request, response, 500, responseString, 'application/json');
 };
 
 const notImplemented = (request, response) => {
